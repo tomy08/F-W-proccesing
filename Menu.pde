@@ -16,7 +16,9 @@ class BotonMenu {
   }
 
   boolean encima() {
-    return mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
+    float mx = mouseX * ANCHO / (float) width;    // el ratón, pasado a coordenadas del juego
+    float my = mouseY * ALTO / (float) height;
+    return mx > x && mx < x + w && my > y && my < y + h;
   }
 
   void dibujar() {
@@ -34,7 +36,7 @@ class BotonMenu {
 }
 
 // Botones de todas las pantallas
-BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnVolver;
+BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnSalir, btnVolver;
 BotonMenu btnPausaHUD, btnReanudar, btnReiniciarNivel, btnPausaMenu;
 BotonMenu btnSiguiente, btnRepetir, btnVictoriaMenu;
 BotonMenu btnCrear, btnUnirse, btnRedJugar, btnRedElegir, btnDesconectar;
@@ -46,6 +48,7 @@ void crearBotones() {
   btnJugarRed  = new BotonMenu(330, 365, 300, 45, "Jugar en red");
   btnSeleccion = new BotonMenu(330, 420, 300, 45, "Seleccionar nivel");
   btnAyuda     = new BotonMenu(330, 475, 300, 45, "Cómo jugar");
+  btnSalir     = new BotonMenu(380, 580, 200, 40, "Salir del juego");
   btnVolver    = new BotonMenu(380, 575, 200, 45, "Volver");
 
   // Selección de niveles: dos columnas de cinco
@@ -72,13 +75,13 @@ void crearBotones() {
 
 void dibujarMenu() {
   // el fondo generado incluye el título y los personajes; si falta el archivo, color liso
-  if (fondoMenu != null) image(fondoMenu, 0, 0, width, height);
+  if (fondoMenu != null) image(fondoMenu, 0, 0, ANCHO, ALTO);
   else background(40, 30, 70);
 
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(18);
-  text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, width / 2, 550);
+  text("Niveles completados: " + contarCompletados() + " / " + TOTAL_NIVELES, ANCHO / 2, 550);
 
   // el botón Jugar dice hasta dónde se ha llegado
   if (nivelDesbloqueado == 0) btnJugar.texto = "Jugar";
@@ -88,6 +91,7 @@ void dibujarMenu() {
   btnJugarRed.dibujar();
   btnSeleccion.dibujar();
   btnAyuda.dibujar();
+  btnSalir.dibujar();
 }
 
 void clickMenu() {
@@ -98,6 +102,7 @@ void clickMenu() {
   }
   else if (btnSeleccion.encima()) estado = SELECCION;
   else if (btnAyuda.encima()) estado = AYUDA;
+  else if (btnSalir.encima()) salirDelJuego();
 }
 
 int contarCompletados() {
@@ -131,10 +136,10 @@ void dibujarAyuda() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("Cómo jugar", width / 2, 50);
+  text("Cómo jugar", ANCHO / 2, 50);
   textSize(18);
   for (int i = 0; i < TEXTO_AYUDA.length; i++) {
-    text(TEXTO_AYUDA[i], width / 2, 120 + i * 30);
+    text(TEXTO_AYUDA[i], ANCHO / 2, 120 + i * 30);
   }
   btnVolver.dibujar();
 }
@@ -148,7 +153,7 @@ void dibujarSeleccion() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("Selecciona un nivel", width / 2, 60);
+  text("Selecciona un nivel", ANCHO / 2, 60);
 
   for (int i = 0; i < TOTAL_NIVELES; i++) {
     BotonMenu b = botonesNivel[i];

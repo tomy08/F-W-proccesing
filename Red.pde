@@ -278,9 +278,9 @@ void dibujarRed() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("Jugar en red", width / 2, 50);
+  text("Jugar en red", ANCHO / 2, 50);
   textSize(18);
-  text("Los dos ordenadores deben estar en la misma red (WiFi o cable).", width / 2, 100);
+  text("Los dos ordenadores deben estar en la misma red (WiFi o cable).", ANCHO / 2, 100);
 
   if (modoRed == LOCAL) {
     text("Tú juegas con Fuego", 270, 260);
@@ -297,19 +297,19 @@ void dibujarRed() {
     btnVolver.dibujar();
   } else if (companero == null) {
     textSize(26);
-    text("Esperando a tu compañero...", width / 2, 200);
+    text("Esperando a tu compañero...", ANCHO / 2, 200);
     textSize(18);
-    text("Dile que pulse \"Unirse\" y escriba esta IP:", width / 2, 260);
+    text("Dile que pulse \"Unirse\" y escriba esta IP:", ANCHO / 2, 260);
     fill(255, 220, 80);
     textSize(30);
-    text(misIPs, width / 2, 310);
+    text(misIPs, ANCHO / 2, 310);
     fill(255);
     textSize(16);
-    text("Si Windows pregunta por el firewall, pulsa \"Permitir\".", width / 2, 360);
+    text("Si Windows pregunta por el firewall, pulsa \"Permitir\".", ANCHO / 2, 360);
     btnDesconectar.dibujar();
   } else {
     textSize(26);
-    text("¡Tu compañero (Agua) se ha unido!", width / 2, 200);
+    text("¡Tu compañero (Agua) se ha unido!", ANCHO / 2, 200);
     btnRedJugar.texto = "Jugar (nivel " + (nivelDesbloqueado + 1) + ")";
     btnRedJugar.dibujar();
     btnRedElegir.dibujar();
@@ -319,7 +319,7 @@ void dibujarRed() {
   fill(255, 200, 120);
   textAlign(CENTER, CENTER);
   textSize(16);
-  text(mensajeRed, width / 2, 540);
+  text(mensajeRed, ANCHO / 2, 540);
 }
 
 void clickRed() {
@@ -347,9 +347,9 @@ void dibujarEspera() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(28);
-  text("Conectado como Agua", width / 2, 200);
+  text("Conectado como Agua", ANCHO / 2, 200);
   textSize(18);
-  text("Esperando a que el anfitrión elija un nivel...", width / 2, 260);
-  text("Puedes moverte con las flechas o con W A D.", width / 2, 310);
+  text("Esperando a que el anfitrión elija un nivel...", ANCHO / 2, 260);
+  text("Puedes moverte con las flechas o con W A D.", ANCHO / 2, 310);
   btnDesconectar.dibujar();
 }

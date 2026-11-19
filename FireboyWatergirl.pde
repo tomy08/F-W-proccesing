@@ -9,6 +9,8 @@ final int TAM = 32;            // tamaño de una casilla en píxeles
 final int COLUMNAS = 30;       // 30 casillas x 32 px = 960 px de ancho
 final int FILAS = 20;          // 20 casillas x 32 px = 640 px de alto
 final int TOTAL_NIVELES = 10;
+final int ANCHO = 960;          // el juego se dibuja a 960x640...
+final int ALTO = 640;           // ...y se estira para llenar la pantalla
 
 // Pantallas (estados) del juego
 final int MENU = 0, SELECCION = 1, AYUDA = 2, JUGANDO = 3, PAUSA = 4;
@@ -50,7 +52,7 @@ PImage fondoMenu;
 // 2. CONFIGURACIÓN INICIAL
 // =====================================================================
 void setup() {
-  size(960, 640);
+  fullScreen(P2D);       // pantalla completa (P2D usa la placa de video, así no se laguea)
   frameRate(60);
   fondoTemplo = loadImage("fondo.png");   // imagen de fondo (data/fondo.png); null si no está
   fondoMenu = loadImage("fondoMenu.png"); // fondo del menú (data/fondoMenu.png); null si no está
@@ -66,6 +68,8 @@ void setup() {
 // =====================================================================
 void draw() {
   actualizarRed();       // recibe los mensajes de la red (pestaña Red)
+
+  scale(width / (float) ANCHO, height / (float) ALTO);   // estira el juego a toda la pantalla
 
   if (estado == MENU) dibujarMenu();
   else if (estado == SELECCION) dibujarSeleccion();
@@ -116,7 +120,7 @@ void actualizarJuego() {
 
 // Dibuja el nivel completo
 void dibujarJuego() {
-  if (fondoTemplo != null) image(fondoTemplo, 0, 0, width, height);   // fondo del templo
+  if (fondoTemplo != null) image(fondoTemplo, 0, 0, ANCHO, ALTO);   // fondo del templo
   else background(60, 90, 130);                                        // color liso si falta la imagen
   dibujarMapa();
   dibujarSalidas();
@@ -142,6 +146,7 @@ void keyPressed() {
     else if (estado == PAUSA) estado = JUGANDO;
     else if (estado == SELECCION) irAlMenu();
     else if (estado == AYUDA || (estado == RED && modoRed == LOCAL)) estado = MENU;
+    else if (estado == MENU) salirDelJuego();   // ESC en el menú principal cierra el juego
     return;
   }
 
@@ -183,6 +188,13 @@ void cambiarTecla(boolean pulsada) {
 void soltarTeclas() {
   teclaA = teclaD = teclaW = false;
   teclaIzq = teclaDer = teclaArriba = false;
+}
+
+// Cierra el juego (guardando antes el progreso)
+void salirDelJuego() {
+  guardarProgreso();
+  if (modoRed != LOCAL) desconectar();
+  exit();
 }
 
 void mousePressed() {

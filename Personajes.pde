@@ -71,7 +71,7 @@ class Personaje {
   // Se mira la fila de casillas que hay justo debajo de los pies.
   char tocaPeligro() {
     if (!vivo) return ' ';
-    if (y > height + 50) return 'v';
+    if (y > ALTO + 50) return 'v';
     int fila = floor((y + ALTO_PJ) / TAM);
     int colIzq = floor((x + MARGEN_PELIGRO) / TAM);
     int colDer = floor((x + ANCHO_PJ - MARGEN_PELIGRO - 0.01) / TAM);

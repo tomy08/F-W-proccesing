@@ -6,7 +6,7 @@
 void dibujarHUD() {
   noStroke();
   fill(0, 150);
-  rect(0, 0, width, 32);
+  rect(0, 0, ANCHO, 32);
   fill(255);
   textAlign(LEFT, CENTER);
   textSize(16);
@@ -18,22 +18,22 @@ void dibujarHUD() {
 
 void dibujarMensajeMuerte() {
   fill(0, 150);
-  rect(0, height / 2 - 40, width, 80);
+  rect(0, ALTO / 2 - 40, ANCHO, 80);
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(30);
-  text(mensajeMuerte, width / 2, height / 2);
+  text(mensajeMuerte, ANCHO / 2, ALTO / 2);
 }
 
 // Oscurece el juego y escribe un título (para la pausa y la victoria)
 void dibujarPanel(String titulo) {
   fill(0, 170);
   noStroke();
-  rect(0, 0, width, height);
+  rect(0, 0, ANCHO, ALTO);
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text(titulo, width / 2, 160);
+  text(titulo, ANCHO / 2, 160);
 }
 
 // En red, "Menú principal" lleva a la sala de red o sale de la partida
@@ -57,7 +57,7 @@ void dibujarPausa() {
   btnPausaMenu.texto = textoBotonSalir();
   btnPausaMenu.dibujar();
   if (modoRed == INVITADO) {
-    text("El anfitrión ha pausado la partida", width / 2, 260);   // el invitado solo puede salir
+    text("El anfitrión ha pausado la partida", ANCHO / 2, 260);   // el invitado solo puede salir
   } else {
     btnReanudar.dibujar();
     btnReiniciarNivel.dibujar();
@@ -100,21 +100,21 @@ void dibujarVictoria() {
     // victoria final: se han superado los 10 niveles
     dibujarPanel("¡VICTORIA!");
     textSize(26);
-    text("Fuego y Agua han conquistado el Templo de la 35", width / 2, 220);
+    text("Fuego y Agua han conquistado el Templo de la 35", ANCHO / 2, 220);
     textSize(18);
-    text("Has completado los 10 niveles de Fireboy & Watergirl: La 35° Aventura", width / 2, 260);
+    text("Has completado los 10 niveles de Fireboy & Watergirl: La 35° Aventura", ANCHO / 2, 260);
   } else {
     dibujarPanel("¡Nivel " + (nivelActual + 1) + " superado!");
     textSize(22);
-    text("Pulsa ENTER para continuar", width / 2, 260);
+    text("Pulsa ENTER para continuar", ANCHO / 2, 260);
   }
   text("Gemas rojas: " + gemasRojas + "/" + totalRojas + "    Gemas azules: " + gemasAzules + "/" + totalAzules
-    + "    Tiempo: " + framesNivel / 60 + " s", width / 2, 310);
+    + "    Tiempo: " + framesNivel / 60 + " s", ANCHO / 2, 310);
 
   btnVictoriaMenu.texto = textoBotonSalir();
   btnVictoriaMenu.dibujar();
   if (modoRed == INVITADO) {
-    text("El anfitrión elige cómo seguir", width / 2, 380);
+    text("El anfitrión elige cómo seguir", ANCHO / 2, 380);
   } else {
     if (!esUltimoNivel()) btnSiguiente.dibujar();
     btnRepetir.dibujar();
