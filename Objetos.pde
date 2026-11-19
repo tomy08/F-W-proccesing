@@ -40,6 +40,10 @@ void comprobarGemas() {
   }
 }
 
+boolean todasLasGemasRecogidas() {
+  return gemasRojas == totalRojas && gemasAzules == totalAzules;
+}
+
 
 // ---------------------------------------------------------------------
 // Peligros: lava, agua, ácido y vacío
@@ -141,6 +145,10 @@ void comprobarSalidas() {
   agua.enSalida = agua.estaEnCasilla(salidaAguaCol, salidaAguaFila);
 
   if (fuego.enSalida && agua.enSalida) {
+    if (modoDificultad && !todasLasGemasRecogidas()) {
+      tiempoSalida = 0;
+      return;
+    }
     tiempoSalida++;
     if (tiempoSalida == 1) reproducir(sonidoPuerta);
     if (tiempoSalida > 40) completarNivel();       // pestaña Pantallas

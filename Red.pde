@@ -200,7 +200,7 @@ void procesarMensajeInvitado(String linea) {
 
 // Todo lo necesario para dibujar la partida, en una sola línea de texto:
 // S|idCarga|nivel|estado|fuego|agua|gemas|rojas|azules|puertaX|puertaY|
-//   tiempoMuerte|causa|muertoEsFuego|cronómetro|botones|plataformas
+//   tiempoMuerte|causa|muertoEsFuego|cronómetro|botones|plataformas|dificultad|fondo
 String crearMensajeEstado() {
   String textoGemas = "";
   for (Gema g : gemas) textoGemas += g.recogida ? "1" : "0";
@@ -214,7 +214,8 @@ String crearMensajeEstado() {
     + "|" + textoGemas + "|" + gemasRojas + "|" + gemasAzules
     + "|" + (puertaAbierta[0] ? 1 : 0) + "|" + (puertaAbierta[1] ? 1 : 0)
     + "|" + tiempoMuerte + "|" + causaMuerte + "|" + (muertoEsFuego ? 1 : 0)
-    + "|" + framesNivel + "|" + textoBotones + "|" + textoPlataformas;
+    + "|" + framesNivel + "|" + textoBotones + "|" + textoPlataformas
+    + "|" + (modoDificultad ? 1 : 0) + "|" + fondoTemploActual;
 }
 
 // Un personaje como texto: x;y;vivo;enSalida
@@ -230,18 +231,20 @@ void procesarMensajeAnfitrion(String linea) {
   String[] p = split(linea, '|');
   if (p[0].equals("M")) {
     estado = ESPERA;
-  } else if (p[0].equals("S") && p.length == 17) {
+  } else if (p[0].equals("S") && p.length == 19) {
     aplicarEstado(p);
   }
 }
 
 void aplicarEstado(String[] p) {
+  modoDificultad = p[17].equals("1");
   // ¿El anfitrión ha cargado (o reiniciado) un nivel? Lo cargamos también
   int id = int(p[1]);
   if (id != idCargaInvitado) {
     cargarNivel(int(p[2]));
     idCargaInvitado = id;
   }
+  fondoTemploActual = int(p[18]);
   estado = int(p[3]);
   leerPersonaje(fuego, p[4]);
   leerPersonaje(agua, p[5]);
@@ -328,7 +331,10 @@ void clickRed() {
     else if (btnUnirse.encima()) unirsePartida();
     else if (btnVolver.encima()) estado = MENU;
   } else {
-    if (companero != null && btnRedJugar.encima()) cargarNivel(nivelDesbloqueado);
+    if (companero != null && btnRedJugar.encima()) {
+      modoDificultad = false;
+      cargarNivel(nivelDesbloqueado);
+    }
     else if (companero != null && btnRedElegir.encima()) estado = SELECCION;
     else if (btnDesconectar.encima()) desconectar();
   }

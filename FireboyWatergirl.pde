@@ -33,6 +33,8 @@ int tiempoMuerte = 0;                            // cuenta atrás después de mo
 String mensajeMuerte = "";
 int tiempoSalida = 0;                            // frames que llevan los dos en su puerta
 int framesNivel = 0;                             // cronómetro del nivel (60 frames = 1 segundo)
+boolean modoDificultad = false;                  // exige todas las gemas antes de completar
+final int TIEMPO_DIFICULTAD = 180 * 60;          // 3 minutos por nivel en dificultad
 
 // Teclado (true mientras la tecla está pulsada)
 boolean teclaA, teclaD, teclaW;                  // Fuego
@@ -44,6 +46,8 @@ boolean[] nivelCompletado = new boolean[TOTAL_NIVELES];
 
 // Fondo del templo: imagen opcional en data/fondo.png (si no existe, color liso)
 PImage fondoTemplo;
+PImage fondoTemplo2;
+int fondoTemploActual = 0;
 // Fondo del menú principal: imagen opcional en data/fondoMenu.png (incluye título y personajes)
 PImage fondoMenu;
 
@@ -55,6 +59,7 @@ void setup() {
   fullScreen(P2D);       // pantalla completa (P2D usa la placa de video, así no se laguea)
   frameRate(60);
   fondoTemplo = loadImage("fondo.png");   // imagen de fondo (data/fondo.png); null si no está
+  fondoTemplo2 = loadImage("fondo2.png"); // segundo fondo opcional (data/fondo2.png)
   fondoMenu = loadImage("fondoMenu.png"); // fondo del menú (data/fondoMenu.png); null si no está
   cargarProgreso();      // pestaña Guardado
   crearBotones();        // pestaña Menu
@@ -101,6 +106,14 @@ void actualizarJuego() {
     return;
   }
 
+  if (modoDificultad && framesNivel >= TIEMPO_DIFICULTAD) {
+    tiempoMuerte = 75;
+    causaMuerte = ' ';
+    mensajeMuerte = "¡Se acabó el tiempo!";
+    reproducir(sonidoMuerte);
+    return;
+  }
+
   for (PlataformaMovil p : plataformas) p.actualizar();   // primero las plataformas (llevan a los personajes)
   if (modoRed == ANFITRION) {
     // En red, el anfitrión maneja a Fuego con cualquiera de las teclas
@@ -120,8 +133,9 @@ void actualizarJuego() {
 
 // Dibuja el nivel completo
 void dibujarJuego() {
-  if (fondoTemplo != null) image(fondoTemplo, 0, 0, ANCHO, ALTO);   // fondo del templo
-  else background(60, 90, 130);                                        // color liso si falta la imagen
+  PImage fondoActual = fondoTemploActual == 1 ? fondoTemplo2 : fondoTemplo;
+  if (fondoActual != null) image(fondoActual, 0, 0, ANCHO, ALTO);
+  else background(60, 90, 130);
   dibujarMapa();
   dibujarSalidas();
   for (Interruptor i : interruptores) i.dibujar();

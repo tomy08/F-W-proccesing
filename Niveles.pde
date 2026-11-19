@@ -304,6 +304,8 @@ String[] NOMBRES_NIVELES = {
 void cargarNivel(int numero) {
   nivelActual = numero;
   idCarga++;            // avisa al invitado de que hay un nivel nuevo (pestaña Red)
+  if (fondoTemplo2 != null) fondoTemploActual = int(random(2));
+  else fondoTemploActual = 0;
   gemas.clear();
   interruptores.clear();
   plataformas.clear();
