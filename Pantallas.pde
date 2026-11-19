@@ -10,10 +10,22 @@ void dibujarHUD() {
   fill(255);
   textAlign(LEFT, CENTER);
   textSize(16);
-  text("Nivel " + (nivelActual + 1) + ": " + NOMBRES_NIVELES[nivelActual], 10, 15);
+  String etiquetaNivel = modoDificultad ? "Dificultad " : "Nivel ";
+  text(etiquetaNivel + (nivelActual + 1) + ": " + NOMBRES_NIVELES[nivelActual], 10, 15);
   text("Gemas rojas: " + gemasRojas + "/" + totalRojas + "    Azules: " + gemasAzules + "/" + totalAzules, 330, 15);
-  text("Tiempo: " + framesNivel / 60 + " s", 700, 15);
+  if (modoDificultad) {
+    int segundosRestantes = max(0, (TIEMPO_DIFICULTAD - framesNivel) / 60);
+    text("Tiempo: " + segundosRestantes / 60 + ":" + nf(segundosRestantes % 60, 2), 700, 15);
+  } else {
+    text("Tiempo: " + framesNivel / 60 + " s", 700, 15);
+  }
   btnPausaHUD.dibujar();
+  if (modoDificultad && !todasLasGemasRecogidas()) {
+    fill(255, 210, 60);
+    textAlign(CENTER, TOP);
+    textSize(16);
+    text("DIFICULTAD: recoge todas las gemas antes de salir", ANCHO / 2, 38);
+  }
 }
 
 void dibujarMensajeMuerte() {
@@ -100,9 +112,11 @@ void dibujarVictoria() {
     // victoria final: se han superado los 10 niveles
     dibujarPanel("¡VICTORIA!");
     textSize(26);
-    text("Fuego y Agua han conquistado el Templo de la 35", ANCHO / 2, 220);
+    if (modoDificultad) text("¡Han superado el modo dificultad!", ANCHO / 2, 220);
+    else text("Fuego y Agua han conquistado el Templo de la 35", ANCHO / 2, 220);
     textSize(18);
-    text("Has completado los 10 niveles de Fireboy & Watergirl: La 35° Aventura", ANCHO / 2, 260);
+    if (modoDificultad) text("Todas las gemas y el límite de tiempo fueron obligatorios", ANCHO / 2, 260);
+    else text("Has completado los 10 niveles de Fireboy & Watergirl: La 35° Aventura", ANCHO / 2, 260);
   } else {
     dibujarPanel("¡Nivel " + (nivelActual + 1) + " superado!");
     textSize(22);

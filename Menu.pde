@@ -37,6 +37,7 @@ class BotonMenu {
 
 // Botones de todas las pantallas
 BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnSalir, btnVolver;
+BotonMenu btnDificultad;
 BotonMenu btnPausaHUD, btnReanudar, btnReiniciarNivel, btnPausaMenu;
 BotonMenu btnSiguiente, btnRepetir, btnVictoriaMenu;
 BotonMenu btnCrear, btnUnirse, btnRedJugar, btnRedElegir, btnDesconectar;
@@ -50,6 +51,7 @@ void crearBotones() {
   btnAyuda     = new BotonMenu(330, 475, 300, 45, "Cómo jugar");
   btnSalir     = new BotonMenu(380, 580, 200, 40, "Salir del juego");
   btnVolver    = new BotonMenu(380, 575, 200, 45, "Volver");
+  btnDificultad = new BotonMenu(330, 530, 300, 45, "Modo dificultad");
 
   // Selección de niveles: dos columnas de cinco
   for (int i = 0; i < TOTAL_NIVELES; i++) {
@@ -91,11 +93,16 @@ void dibujarMenu() {
   btnJugarRed.dibujar();
   btnSeleccion.dibujar();
   btnAyuda.dibujar();
+  if (modoDificultadDesbloqueado()) btnDificultad.dibujar();
   btnSalir.dibujar();
 }
 
 void clickMenu() {
-  if (btnJugar.encima()) cargarNivel(nivelDesbloqueado);
+  if (btnJugar.encima()) {
+    modoDificultad = false;
+    cargarNivel(nivelDesbloqueado);
+  }
+  else if (modoDificultadDesbloqueado() && btnDificultad.encima()) iniciarModoDificultad();
   else if (btnJugarRed.encima()) {
     mensajeRed = "";
     estado = RED;
@@ -113,6 +120,15 @@ int contarCompletados() {
   return total;
 }
 
+boolean modoDificultadDesbloqueado() {
+  return contarCompletados() == TOTAL_NIVELES;
+}
+
+void iniciarModoDificultad() {
+  modoDificultad = true;
+  cargarNivel(0);
+}
+
 String[] TEXTO_AYUDA = {
   "CONTROLES",
   "Fuego: A y D para moverse, W para saltar.",
@@ -124,6 +140,7 @@ String[] TEXTO_AYUDA = {
   "Agua puede pisar el agua, pero muere en la lava.",
   "El ácido verde y caer al vacío matan a los dos.",
   "Fuego recoge las gemas rojas y Agua las azules.",
+  "Modo dificultad: todas las gemas y 3 minutos por nivel.",
   "Un botón abre las puertas de su color mientras alguien lo pisa.",
   "Las plataformas grises se mueven y llevan a quien esté encima.",
   "Cada personaje debe llegar a su puerta. Si uno muere, el nivel se reinicia.",
@@ -178,6 +195,7 @@ void dibujarSeleccion() {
 void clickSeleccion() {
   for (int i = 0; i <= nivelDesbloqueado; i++) {
     if (botonesNivel[i].encima()) {
+      modoDificultad = false;
       cargarNivel(i);
       return;
     }
