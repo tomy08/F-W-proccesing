@@ -34,7 +34,13 @@ String mensajeMuerte = "";
 int tiempoSalida = 0;                            // frames que llevan los dos en su puerta
 int framesNivel = 0;                             // cronómetro del nivel (60 frames = 1 segundo)
 boolean modoDificultad = false;                  // exige todas las gemas antes de completar
-final int TIEMPO_DIFICULTAD = 180 * 60;          // 3 minutos por nivel en dificultad
+// Tiempo límite en dificultad (en frames, 60 = 1 segundo):
+// niveles 1 a 3 -> 20 s, niveles 4 a 8 -> 30 s, niveles 9 y 10 -> 45 s
+int tiempoDificultad() {
+  if (nivelActual <= 2) return 20 * 60;
+  if (nivelActual <= 7) return 30 * 60;
+  return 45 * 60;
+}
 
 // Teclado (true mientras la tecla está pulsada)
 boolean teclaA, teclaD, teclaW;                  // Fuego
@@ -43,6 +49,9 @@ boolean teclaIzq, teclaDer, teclaArriba;         // Agua
 // Progreso guardado
 int nivelDesbloqueado = 0;                       // último nivel desbloqueado (0 a 9)
 boolean[] nivelCompletado = new boolean[TOTAL_NIVELES];
+int dificultadDesbloqueado = 0;                  // último nivel desbloqueado en modo dificultad
+boolean[] dificultadCompletado = new boolean[TOTAL_NIVELES];
+boolean seleccionDificultad = false;             // la pantalla de selección muestra los niveles de dificultad
 
 // Fondo del templo: imagen opcional en data/fondo.png (si no existe, color liso)
 PImage fondoTemplo;
@@ -106,7 +115,7 @@ void actualizarJuego() {
     return;
   }
 
-  if (modoDificultad && framesNivel >= TIEMPO_DIFICULTAD) {
+  if (modoDificultad && framesNivel >= tiempoDificultad()) {
     tiempoMuerte = 75;
     causaMuerte = ' ';
     mensajeMuerte = "¡Se acabó el tiempo!";

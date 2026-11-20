@@ -37,7 +37,7 @@ class BotonMenu {
 
 // Botones de todas las pantallas
 BotonMenu btnJugar, btnJugarRed, btnSeleccion, btnAyuda, btnSalir, btnVolver;
-BotonMenu btnDificultad;
+BotonMenu btnDificultad, btnCambiarModo, btnRedDificultad;
 BotonMenu btnPausaHUD, btnReanudar, btnReiniciarNivel, btnPausaMenu;
 BotonMenu btnSiguiente, btnRepetir, btnVictoriaMenu;
 BotonMenu btnCrear, btnUnirse, btnRedJugar, btnRedElegir, btnDesconectar;
@@ -57,6 +57,7 @@ void crearBotones() {
   for (int i = 0; i < TOTAL_NIVELES; i++) {
     botonesNivel[i] = new BotonMenu(90 + (i / 5) * 400, 120 + (i % 5) * 80, 380, 60, "");
   }
+  btnCambiarModo = new BotonMenu(330, 515, 300, 45, "Ver modo dificultad");
 
   // Partida, pausa y victoria
   btnPausaHUD       = new BotonMenu(880, 2, 75, 28, "Pausa");
@@ -72,6 +73,7 @@ void crearBotones() {
   btnUnirse      = new BotonMenu(540, 360, 300, 50, "Unirse");
   btnRedJugar    = new BotonMenu(330, 300, 300, 50, "");
   btnRedElegir   = new BotonMenu(330, 365, 300, 50, "Elegir nivel");
+  btnRedDificultad = new BotonMenu(330, 430, 300, 50, "Modo dificultad");
   btnDesconectar = new BotonMenu(380, 575, 200, 45, "Desconectar");
 }
 
@@ -88,6 +90,8 @@ void dibujarMenu() {
   // el botón Jugar dice hasta dónde se ha llegado
   if (nivelDesbloqueado == 0) btnJugar.texto = "Jugar";
   else btnJugar.texto = "Continuar (nivel " + (nivelDesbloqueado + 1) + ")";
+
+  btnDificultad.texto = textoBotonDificultad();
 
   btnJugar.dibujar();
   btnJugarRed.dibujar();
@@ -107,7 +111,10 @@ void clickMenu() {
     mensajeRed = "";
     estado = RED;
   }
-  else if (btnSeleccion.encima()) estado = SELECCION;
+  else if (btnSeleccion.encima()) {
+    seleccionDificultad = false;
+    estado = SELECCION;
+  }
   else if (btnAyuda.encima()) estado = AYUDA;
   else if (btnSalir.encima()) salirDelJuego();
 }
@@ -124,9 +131,23 @@ boolean modoDificultadDesbloqueado() {
   return contarCompletados() == TOTAL_NIVELES;
 }
 
+int contarCompletadosDificultad() {
+  int total = 0;
+  for (int i = 0; i < TOTAL_NIVELES; i++) {
+    if (dificultadCompletado[i]) total++;
+  }
+  return total;
+}
+
+// El modo dificultad sigue desde el último nivel desbloqueado en ese modo
 void iniciarModoDificultad() {
   modoDificultad = true;
-  cargarNivel(0);
+  cargarNivel(dificultadDesbloqueado);
+}
+
+String textoBotonDificultad() {
+  if (dificultadDesbloqueado == 0) return "Modo dificultad";
+  return "Dificultad (nivel " + (dificultadDesbloqueado + 1) + ")";
 }
 
 String[] TEXTO_AYUDA = {
@@ -140,7 +161,7 @@ String[] TEXTO_AYUDA = {
   "Agua puede pisar el agua, pero muere en la lava.",
   "El ácido verde y caer al vacío matan a los dos.",
   "Fuego recoge las gemas rojas y Agua las azules.",
-  "Modo dificultad: todas las gemas y 3 minutos por nivel.",
+  "Modo dificultad: todas las gemas y tiempo límite (20 s, 30 s o 45 s).",
   "Un botón abre las puertas de su color mientras alguien lo pisa.",
   "Las plataformas grises se mueven y llevan a quien esté encima.",
   "Cada personaje debe llegar a su puerta. Si uno muere, el nivel se reinicia.",
@@ -170,13 +191,16 @@ void dibujarSeleccion() {
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("Selecciona un nivel", ANCHO / 2, 60);
+  if (!modoDificultadDesbloqueado()) seleccionDificultad = false;
+  boolean dif = seleccionDificultad;
+  int desbloqueado = dif ? dificultadDesbloqueado : nivelDesbloqueado;
+  text(dif ? "Selecciona un nivel (dificultad)" : "Selecciona un nivel", ANCHO / 2, 60);
 
   for (int i = 0; i < TOTAL_NIVELES; i++) {
     BotonMenu b = botonesNivel[i];
-    if (i <= nivelDesbloqueado) {
+    if (i <= desbloqueado) {
       b.texto = (i + 1) + ". " + NOMBRES_NIVELES[i];
-      if (nivelCompletado[i]) b.texto += "  (completado)";
+      if (dif ? dificultadCompletado[i] : nivelCompletado[i]) b.texto += "  (completado)";
       b.dibujar();
     } else {
       // nivel bloqueado: gris y sin efecto al pasar el ratón
@@ -189,16 +213,23 @@ void dibujarSeleccion() {
       text((i + 1) + ". Bloqueado", b.x + b.w / 2, b.y + b.h / 2);
     }
   }
+  // botón para cambiar entre los niveles normales y los de dificultad
+  if (modoDificultadDesbloqueado()) {
+    btnCambiarModo.texto = dif ? "Ver modo normal" : "Ver modo dificultad";
+    btnCambiarModo.dibujar();
+  }
   btnVolver.dibujar();
 }
 
 void clickSeleccion() {
-  for (int i = 0; i <= nivelDesbloqueado; i++) {
+  int desbloqueado = seleccionDificultad ? dificultadDesbloqueado : nivelDesbloqueado;
+  for (int i = 0; i <= desbloqueado; i++) {
     if (botonesNivel[i].encima()) {
-      modoDificultad = false;
+      modoDificultad = seleccionDificultad;
       cargarNivel(i);
       return;
     }
   }
-  if (btnVolver.encima()) irAlMenu();
+  if (modoDificultadDesbloqueado() && btnCambiarModo.encima()) seleccionDificultad = !seleccionDificultad;
+  else if (btnVolver.encima()) irAlMenu();
 }

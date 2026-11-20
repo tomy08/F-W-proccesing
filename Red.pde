@@ -245,7 +245,10 @@ void aplicarEstado(String[] p) {
     idCargaInvitado = id;
   }
   fondoTemploActual = int(p[18]);
-  estado = int(p[3]);
+  int nuevoEstado = int(p[3]);
+  // el invitado también guarda en su ordenador el nivel que acaban de superar
+  if (nuevoEstado == VICTORIA && estado != VICTORIA) registrarNivelCompletado();
+  estado = nuevoEstado;
   leerPersonaje(fuego, p[4]);
   leerPersonaje(agua, p[5]);
   for (int i = 0; i < gemas.size(); i++) gemas.get(i).recogida = p[6].charAt(i) == '1';
@@ -316,6 +319,10 @@ void dibujarRed() {
     btnRedJugar.texto = "Jugar (nivel " + (nivelDesbloqueado + 1) + ")";
     btnRedJugar.dibujar();
     btnRedElegir.dibujar();
+    if (modoDificultadDesbloqueado()) {
+      btnRedDificultad.texto = textoBotonDificultad();
+      btnRedDificultad.dibujar();
+    }
     btnDesconectar.dibujar();
   }
 
@@ -335,7 +342,11 @@ void clickRed() {
       modoDificultad = false;
       cargarNivel(nivelDesbloqueado);
     }
-    else if (companero != null && btnRedElegir.encima()) estado = SELECCION;
+    else if (companero != null && btnRedElegir.encima()) {
+      seleccionDificultad = false;
+      estado = SELECCION;
+    }
+    else if (companero != null && modoDificultadDesbloqueado() && btnRedDificultad.encima()) iniciarModoDificultad();
     else if (btnDesconectar.encima()) desconectar();
   }
 }

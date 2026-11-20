@@ -14,7 +14,7 @@ void dibujarHUD() {
   text(etiquetaNivel + (nivelActual + 1) + ": " + NOMBRES_NIVELES[nivelActual], 10, 15);
   text("Gemas rojas: " + gemasRojas + "/" + totalRojas + "    Azules: " + gemasAzules + "/" + totalAzules, 330, 15);
   if (modoDificultad) {
-    int segundosRestantes = max(0, (TIEMPO_DIFICULTAD - framesNivel) / 60);
+    int segundosRestantes = max(0, (tiempoDificultad() - framesNivel) / 60);
     text("Tiempo: " + segundosRestantes / 60 + ":" + nf(segundosRestantes % 60, 2), 700, 15);
   } else {
     text("Tiempo: " + framesNivel / 60 + " s", 700, 15);
@@ -89,14 +89,24 @@ void clickPausa() {
 // Fin de nivel (y fin del juego al superar el nivel 10)
 // ---------------------------------------------------------------------
 void completarNivel() {
-  nivelCompletado[nivelActual] = true;
-  if (nivelActual + 1 < TOTAL_NIVELES && nivelDesbloqueado < nivelActual + 1) {
-    nivelDesbloqueado = nivelActual + 1;      // desbloquea el siguiente nivel
-  }
-  guardarProgreso();
+  registrarNivelCompletado();
   reproducir(sonidoVictoria);
   soltarTeclas();
   estado = VICTORIA;
+}
+
+// Marca el nivel actual como superado (en el modo que se esté jugando),
+// desbloquea el siguiente y lo guarda en progreso.txt
+void registrarNivelCompletado() {
+  boolean haySiguiente = nivelActual + 1 < TOTAL_NIVELES;
+  if (modoDificultad) {
+    dificultadCompletado[nivelActual] = true;
+    if (haySiguiente && dificultadDesbloqueado < nivelActual + 1) dificultadDesbloqueado = nivelActual + 1;
+  } else {
+    nivelCompletado[nivelActual] = true;
+    if (haySiguiente && nivelDesbloqueado < nivelActual + 1) nivelDesbloqueado = nivelActual + 1;
+  }
+  guardarProgreso();
 }
 
 boolean esUltimoNivel() {

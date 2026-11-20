@@ -6,6 +6,8 @@
 //
 //   desbloqueado=3
 //   completados=1110000000
+//   dificultad_desbloqueado=2
+//   dificultad_completados=1100000000
 //   sonido=1
 //   musica=1
 //
@@ -18,9 +20,15 @@ void guardarProgreso() {
   for (int i = 0; i < TOTAL_NIVELES; i++) {
     completados += nivelCompletado[i] ? "1" : "0";
   }
+  String completadosDif = "";
+  for (int i = 0; i < TOTAL_NIVELES; i++) {
+    completadosDif += dificultadCompletado[i] ? "1" : "0";
+  }
   String[] lineas = {
     "desbloqueado=" + nivelDesbloqueado,
-    "completados=" + completados
+    "completados=" + completados,
+    "dificultad_desbloqueado=" + dificultadDesbloqueado,
+    "dificultad_completados=" + completadosDif
   };
   try {
     saveStrings(sketchPath(ARCHIVO_PROGRESO), lineas);
@@ -46,6 +54,12 @@ void cargarProgreso() {
     } else if (nombre.equals("completados")) {
       for (int i = 0; i < TOTAL_NIVELES && i < valor.length(); i++) {
         nivelCompletado[i] = valor.charAt(i) == '1';
+      }
+    } else if (nombre.equals("dificultad_desbloqueado")) {
+      dificultadDesbloqueado = constrain(int(valor), 0, TOTAL_NIVELES - 1);
+    } else if (nombre.equals("dificultad_completados")) {
+      for (int i = 0; i < TOTAL_NIVELES && i < valor.length(); i++) {
+        dificultadCompletado[i] = valor.charAt(i) == '1';
       }
     }
   }
